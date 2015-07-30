@@ -1,0 +1,17 @@
+{
+  "name": "digest",
+  "version": "0.0.1",
+  "scripts": {
+    "start": "node js/server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:ShivanKaul/gitmail.git"
+  },
+  "license": {
+    "type": "MIT",
+    "url": "https://raw.githubusercontent.com/ShivanKaul/gitmail/master/LICENSE"
+  },
+  "dependencies": {
+  }
+}
