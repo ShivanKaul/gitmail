@@ -1,33 +1,35 @@
-var gcloud = require('gcloud');
-var pubsub;
+// Load the http module to create an http server.
+var http = require('http');
+var fs = require('fs');
 
-pubsub = gcloud.pubsub({
-    projectId: 'gitjob-1020',
-    credentials: {
-        private_key: process.env.PRIVATE_KEY,
-        client_email: process.env.CLIENT_EMAIL
+var server = http.createServer(function (req, responseToSend) {
+
+    var file = req.url;
+
+    var filePrefix = '/..';
+
+    if (file == '/') {
+        file = '/index.html';
     }
+
+    if (file == '/googlec2f8f617ad7e80e0.html') {
+        file = '/googlec2f8f617ad7e80e0.html';
+    }
+
+    fs.readFile(__dirname + filePrefix + file,
+        function (err, data) {
+            if (err) {
+                console.log(err);
+                responseToSend.writeHead(500);
+                return responseToSend.end('Error loading index.html');
+            }
+
+            responseToSend.writeHead(200);
+            responseToSend.end(data);
+        });
+
 });
 
+server.listen(process.env.PORT || 8080);
 
-// Create a new topic.
-pubsub.createTopic('projects/gitjob-1020/topics/newThread', function(err, topic) {});
-
-// Reference an existing topic.
-var topic = pubsub.topic('newThread');
-
-// Publish a message to the topic.
-topic.publish('New message!', function(err) {});
-
-// Subscribe to the topic.
-topic.subscribe('new-subscription', function(err, subscription) {
-    // Register listeners to start pulling for messages.
-    function onError(err) {}
-    function onMessage(message) {}
-    subscription.on('error', onError);
-    subscription.on('message', onMessage);
-
-    // Remove listeners to stop pulling for messages.
-    subscription.removeListener('message', onMessage);
-    subscription.removeListener('error', onError);
-});
+console.log("Port currently being used is: " + (process.env.PORT || 8080));

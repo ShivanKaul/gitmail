@@ -1,5 +1,5 @@
 {
-  "name": "digest",
+  "name": "gitmail",
   "version": "0.0.1",
   "scripts": {
     "start": "node js/server.js"
@@ -13,5 +13,6 @@
     "url": "https://raw.githubusercontent.com/ShivanKaul/gitmail/master/LICENSE"
   },
   "dependencies": {
+    "gcloud": "0.16.0"
   }
 }
