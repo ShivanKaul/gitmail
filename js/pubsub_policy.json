@@ -1,0 +1,11 @@
+POST "https://pubsub.googleapis.com/v1beta2/{resource=projects/gitjob-1020/topics/newThread}:setIamPolicy"
+Content-type: application/json
+
+{
+"policy": {
+"bindings": [{
+"role": "roles/pubsub.publisher",
+"members": ["serviceAccount:gmail-api-push@system.gserviceaccount.com"],
+}],
+}
+}

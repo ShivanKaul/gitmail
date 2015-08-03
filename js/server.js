@@ -6,7 +6,7 @@ var server = http.createServer(function (req, responseToSend) {
 
     var file = req.url;
 
-    var filePrefix = '/..';
+    var filePrefix = '/../htdocs';
 
     if (file == '/') {
         file = '/index.html';
