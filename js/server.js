@@ -8,12 +8,18 @@ var pubsub = require('./pubsub.js');
 
 console.log("Sending watch command...");
 
+// Getting access token
+//var google = require('googleapis');
+//var OAuth2 = google.auth.OAuth2;
+//
+//var oauth2Client = new OAuth2(CLIENT_ID, CLIENT_SECRET, REDIRECT_URL);
+
 //request.post({
 //
 //    url: 'https://www.googleapis.com/gmail/v1/users/me/watch',
 //    headers: {
 //        'content-type': 'application/json',
-//        'Authorization': 'Bearer '+ " "
+//        'Authorization': 'Bearer '+ ""
 //    },
 //    scope: [
 //        'https://mail.google.com/'

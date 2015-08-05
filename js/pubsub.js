@@ -3,20 +3,20 @@ var request = require('request');
 
 var pubsub = gcloud.pubsub({
     projectId: 'gitjob-1020',
-    credentials: {
-        private_key: process.env.PRIVATE_KEY,
-        //private_key_id: process.env.PRIVATE_KEY_ID,
-        //client_id: process.env.CLIENT_ID,
-        //type: process.env.TYPE,
-        client_email: process.env.CLIENT_EMAIL
-    }
-    //keyFilename: __dirname + '/../gitjob-7997d2f90025.json'
+    //credentials: {
+    //    private_key: process.env.PRIVATE_KEY,
+    //    //private_key_id: process.env.PRIVATE_KEY_ID,
+    //    //client_id: process.env.CLIENT_ID,
+    //    //type: process.env.TYPE,
+    //    client_email: process.env.CLIENT_EMAIL
+    //}
+    keyFilename: __dirname + '/../gitjob-695eb8b95a6b.json'
 });
 
 exports.start = function () {
 
 // Create a new topic.
-    pubsub.createTopic('newThread7', function (err, topic, apiResponse) {
+    pubsub.createTopic('newThread8', function (err, topic, apiResponse) {
         console.log("trying to create topic")
         if (err) {
             console.log("Couldn't create a new topic because " + err)
