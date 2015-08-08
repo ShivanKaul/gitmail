@@ -21,8 +21,10 @@ var server = http.createServer(function (req, responseToSend) {
     }
 
     else if (file.match(/authenticated*/)) {
-
+        console.log(file);
+        var access_token = file;
         responseToSend.write("Authenticated!");
+        //auth.useAccessToken(file, watch.start)
     }
 
     responseToSend.end();
