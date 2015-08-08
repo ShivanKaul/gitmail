@@ -20,6 +20,11 @@ var server = http.createServer(function (req, responseToSend) {
         //pubsub.receivedMessage(req);
     }
 
+    else if (file.match(/authenticated*/)) {
+
+        responseToSend.write("Authenticated!");
+    }
+
     responseToSend.end();
 
 });
