@@ -4,13 +4,13 @@ var readline = require('readline');
 var googleAuth = require('google-auth-library');
 var oauth;
 var open = require('open');
+var TOKEN_DIR = rootdir + '.credentials/';
+var TOKEN_PATH = TOKEN_DIR + 'token.json';
 
 
 exports.setup = function(callback) {
 
     var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
-    var TOKEN_DIR = rootdir + '/.credentials/';
-    var TOKEN_PATH = TOKEN_DIR + 'token.json';
 
     // Load client secrets from a local file.
     fs.readFile(rootdir + '.credentials/client_secret.json', function processClientSecrets(err, content) {
@@ -34,7 +34,8 @@ exports.setup = function(callback) {
         console.log(credentials)
         var clientSecret = credentials.web.client_secret;
         var clientId = credentials.web.client_id;
-        var redirectUrl = credentials.web.redirect_uris[1];
+        // 1 for testing on localhost, 0 for prod
+        var redirectUrl = credentials.web.redirect_uris[0];
         var auth = new googleAuth();
         var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
 
@@ -66,7 +67,6 @@ exports.setup = function(callback) {
         // open up this url
         // sign in, Google will redirect to authorize page
         // read in auth code from url
-        // but how do I pass around oauth2client object
         open(authUrl);
     }
 
