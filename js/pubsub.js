@@ -1,5 +1,6 @@
 var gcloud = require('gcloud');
 var request = require('request');
+var rootdir = __dirname + '/../';
 
 var pubsub = gcloud.pubsub({
     projectId: 'gitjob-1020',
@@ -10,7 +11,7 @@ var pubsub = gcloud.pubsub({
     //    //type: process.env.TYPE,
     //    client_email: process.env.CLIENT_EMAIL
     //}
-    keyFilename: __dirname + '/../gitjob-695eb8b95a6b.json'
+    keyFilename: rootdir + '.credentials/client_secret.json'
 });
 
 exports.start = function () {
