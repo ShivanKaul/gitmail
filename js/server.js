@@ -7,10 +7,8 @@ var history = require('./history');
 var pubsub = require('./pubsub');
 var rootdir = __dirname + '/../';
 
-var redis = require("redis"),
-    client = redis.createClient();
 
-var lastHistoryId = 4031368, // ohmygodwat
+var lastHistoryId = 4033514, // ohmygodwat
     newHistoryId;
 
 var server = http.createServer(function (req, responseToSend) {
@@ -34,7 +32,6 @@ var server = http.createServer(function (req, responseToSend) {
                 newHistoryId = JSON.parse(message).historyId;
                 auth.setup(history.list, lastHistoryId)
                 lastHistoryId = newHistoryId
-                //client.lpush('messages', userId)
             }
 
         })
