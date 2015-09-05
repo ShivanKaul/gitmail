@@ -11,7 +11,7 @@ var server = http.createServer(function (req, responseToSend) {
     var file = req.url;
 
     if (file == '/') {
-        auth.setup(watch.start)
+        auth.setup(watch.start);
     }
 
     if (req.method == 'POST' && file == '/receive') {
@@ -26,19 +26,18 @@ var server = http.createServer(function (req, responseToSend) {
                 //var userId = JSON.parse(message).emailAddress;
                 newHistoryId = JSON.parse(message).historyId;
                 auth.setup(history.list, lastHistoryId);
-                lastHistoryId = newHistoryId
+                lastHistoryId = newHistoryId;
             }
         })
     }
 
     else if (file.match(/authenticated*/)) {
         var access_token = file.split("code=")[1];
-        responseToSend.write("Authenticated!");
-        auth.useAccessToken(access_token, watch.start)
+        responseToSend.write("Authenticated! You can close this window.");
+        auth.useAccessToken(access_token, history.list, lastHistoryId);
     }
 
     responseToSend.end();
-
 });
 
 server.listen(process.env.PORT || 8080);

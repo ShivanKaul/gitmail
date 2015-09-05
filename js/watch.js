@@ -23,6 +23,5 @@ exports.start = function(auth) {
             console.log("Successfully sent request for watch");
             console.log(response)
         }
-
     });
 };

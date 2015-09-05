@@ -21,7 +21,7 @@ exports.list = function(auth, startHistoryId) {
         else {
             console.log("Successfully sent request for listing history");
             //console.log(response);
-            var latest_messageId = response.history[response.history.length - 1].messages[0].id
+            var latest_messageId = response.history[response.history.length - 1].messages[0].id;
 
             gmail.users.messages.get({
                 auth: auth,
@@ -59,15 +59,13 @@ exports.list = function(auth, startHistoryId) {
 
                     var name = from.substring(0, from.indexOf('<')).trim();
                     var email = from.substring(from.indexOf('<') + 1, from.indexOf('>')).trim();
-                    var body = (new Buffer(parts[0].body.data, 'base64')).toString();
-
                     console.log(subject);
                     console.log(body);
+
+                    var body = (new Buffer(parts[0].body.data, 'base64')).toString();
                     redis.unshift(date, name, email, subject, body)
                 }
             })
-
         }
-
     });
 };

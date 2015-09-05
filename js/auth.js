@@ -33,10 +33,9 @@ exports.setup = function(callback, param) {
 
      */
     function authorize(credentials, callback, param) {
-        console.log(credentials)
+        console.log(credentials);
         var clientSecret = credentials.web.client_secret;
         var clientId = credentials.web.client_id;
-        // 1 for testing on localhost, 0 for prod
         var redirectUrl = credentials.web.redirect_uris[0];
         var auth = new googleAuth();
         var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
@@ -46,9 +45,15 @@ exports.setup = function(callback, param) {
             if (err) {
                 getNewToken(oauth2Client);
             } else {
-                oauth2Client.credentials = JSON.parse(token);
-                console.log("using previous token")
-                callback(oauth2Client, param);
+                token = JSON.parse(token);
+                if (token.expiry_date < Date.now()) {
+                    getNewToken(oauth2Client);
+                }
+                else {
+                    oauth2Client.credentials = token;
+                    console.log("Using previous token");
+                    callback(oauth2Client, param);
+                }
             }
         });
     }
@@ -75,7 +80,7 @@ exports.setup = function(callback, param) {
 
 };
 
-exports.useAccessToken = function(code, callback) {
+exports.useAccessToken = function(code, callback, param) {
     oauth.getToken(code, function(err, token) {
         if (err) {
             console.log('Error while trying to retrieve access token', err);
@@ -83,7 +88,7 @@ exports.useAccessToken = function(code, callback) {
         }
         oauth.credentials = token;
         storeToken(token);
-        callback(oauth);
+        callback(oauth, param);
     });
 };
 
