@@ -8,7 +8,7 @@ var TOKEN_DIR = rootdir + '.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'token.json';
 
 
-exports.setup = function(callback) {
+exports.setup = function(callback, param) {
 
     var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
@@ -20,7 +20,7 @@ exports.setup = function(callback) {
         }
         // Authorize a client with the loaded credentials, then call the
         // Gmail API.
-        authorize(JSON.parse(content), callback);
+        authorize(JSON.parse(content), callback, param);
     });
 
     /**
@@ -29,8 +29,10 @@ exports.setup = function(callback) {
      *
      * @param {Object} credentials The authorization client credentials.
      * @param {function} callback The callback to call with the authorized client.
+     * @param {string} param Optional parameter
+
      */
-    function authorize(credentials, callback) {
+    function authorize(credentials, callback, param) {
         console.log(credentials)
         var clientSecret = credentials.web.client_secret;
         var clientId = credentials.web.client_id;
@@ -45,7 +47,8 @@ exports.setup = function(callback) {
                 getNewToken(oauth2Client);
             } else {
                 oauth2Client.credentials = JSON.parse(token);
-                callback(oauth2Client);
+                console.log("using previous token")
+                callback(oauth2Client, param);
             }
         });
     }
