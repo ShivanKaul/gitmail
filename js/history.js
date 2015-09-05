@@ -20,9 +20,8 @@ exports.list = function(auth, startHistoryId) {
         }
         else {
             console.log("Successfully sent request for listing history");
-            console.log(response);
+            //console.log(response);
             var latest_messageId = response.history[response.history.length - 1].messages[0].id
-            console.log("message id is " + latest_messageId);
 
             gmail.users.messages.get({
                 auth: auth,
@@ -36,15 +35,15 @@ exports.list = function(auth, startHistoryId) {
                 }
                 else {
                     console.log("Successfully sent request for getting message");
-                    console.log(response)
-                    var headers = response.payload.headers
-                    var parts = response.payload.parts
+                    var headers = response.payload.headers;
+                    var parts = response.payload.parts;
 
                     var subject,
                         date,
                         from;
 
-                    for (i = 0 ; i<headers.length; i++) {
+                    // Get relevant headers
+                    for (var i = 0 ; i < headers.length; i++) {
                         if (headers[i].name === 'Subject') {
                             subject = headers[i].value;
                         }
@@ -56,24 +55,17 @@ exports.list = function(auth, startHistoryId) {
                         }
                     }
 
-                    var name = from.substring(0, from.indexOf('<')).trim()
-                    var email = from.substring(from.indexOf('<') + 1, from.indexOf('>')).trim()
+                    date = (new Date(date)).toISOString();
 
-                    var body = (new Buffer(parts[0].body.data, 'base64')).toString()
+                    var name = from.substring(0, from.indexOf('<')).trim();
+                    var email = from.substring(from.indexOf('<') + 1, from.indexOf('>')).trim();
+                    var body = (new Buffer(parts[0].body.data, 'base64')).toString();
+
+                    console.log(subject);
+                    console.log(body);
                     redis.unshift(date, name, email, subject, body)
-
-
                 }
             })
-
-            //for (i = 0 ; i<response.history.length; i++) {
-            //    console.log(response.history[i])
-            //    console.log("")
-            //}
-
-            //var latest_message = response.history[response.history.length - 3].messages;
-            //console.log(latest_message);
-            //console.log(latest_message.internalDate);
 
         }
 
