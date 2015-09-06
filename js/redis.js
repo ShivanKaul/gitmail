@@ -7,10 +7,11 @@ exports.unshift = function(date, name, email, subject, body) {
         senderName: name,
         senderEmail: email,
         messageContents: body,
-        messageSubject: subject
+        messageSubject: subject,
+        tag: 'IncomingEmail'
     };
 
-    client.lrange('messages', 0, 0, function(err, value) {
+    client.lrange('processed_messages', 0, 0, function(err, value) {
         if (err) {
             console.log("Couldn't read head element: " + error)
         }

@@ -60,9 +60,8 @@ exports.list = function(auth, startHistoryId) {
                     var name = from.substring(0, from.indexOf('<')).trim();
                     var email = from.substring(from.indexOf('<') + 1, from.indexOf('>')).trim();
                     console.log(subject);
-                    console.log(body);
-
                     var body = (new Buffer(parts[0].body.data, 'base64')).toString();
+                    console.log(body);
                     redis.unshift(date, name, email, subject, body)
                 }
             })

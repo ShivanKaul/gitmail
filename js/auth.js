@@ -4,11 +4,12 @@ var readline = require('readline');
 var googleAuth = require('google-auth-library');
 var oauth;
 var open = require('open');
+var watch = require('./watch');
 var TOKEN_DIR = rootdir + '.credentials/';
 var TOKEN_PATH = TOKEN_DIR + 'token.json';
 
 
-exports.setup = function(callback, param) {
+exports.send = function(callback, param) {
 
     var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
 
@@ -20,8 +21,53 @@ exports.setup = function(callback, param) {
         }
         // Authorize a client with the loaded credentials, then call the
         // Gmail API.
-        authorize(JSON.parse(content), callback, param);
+
+        var credentials = JSON.parse(content)
+        var clientSecret = credentials.web.client_secret;
+        var clientId = credentials.web.client_id;
+        var redirectUrl = credentials.web.redirect_uris[0];
+        var auth = new googleAuth();
+        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+
+        fs.readFile(TOKEN_PATH, function(err, token) {
+            if (err) {
+                console.log("Can't find token");
+                //getNewToken(oauth2Client, function(authUrl){
+                //    callback(authUrl);
+                //});
+                //callback(authUrl);
+            } else {
+                token = JSON.parse(token);
+                //if (token.expiry_date < Date.now()) {
+                //    getNewToken(oauth2Client, function(authUrl){
+                //        callback(authUrl);
+                //    });
+                //}
+                oauth2Client.credentials = token;
+                callback(oauth2Client, param);
+            }
+        });
+    })
+}
+
+
+exports.setup = function(callback) {
+
+    var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+
+    // Load client secrets from a local file.
+    fs.readFile(rootdir + '.credentials/client_secret.json', function processClientSecrets(err, content) {
+        if (err) {
+            console.log('Error loading client secret file: ' + err);
+            return;
+        }
+        // Authorize a client with the loaded credentials, then call the
+        // Gmail API.
+        authorize(JSON.parse(content), callback)
     });
+
+
+
 
     /**
      * Create an OAuth2 client with the given credentials, and then execute the
@@ -32,28 +78,38 @@ exports.setup = function(callback, param) {
      * @param {string} param Optional parameter
 
      */
-    function authorize(credentials, callback, param) {
+    function authorize(credentials, callback) {
         console.log(credentials);
         var clientSecret = credentials.web.client_secret;
         var clientId = credentials.web.client_id;
         var redirectUrl = credentials.web.redirect_uris[0];
         var auth = new googleAuth();
         var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
+        var authUrl = oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES
+        });
 
         // Check if we have previously stored a token.
         fs.readFile(TOKEN_PATH, function(err, token) {
             if (err) {
-                getNewToken(oauth2Client);
+                console.log("Can't find token");
+                //getNewToken(oauth2Client, function(authUrl){
+                //    callback(authUrl);
+                //});
+                                oauth = oauth2Client;
+
+                callback(authUrl);
             } else {
                 token = JSON.parse(token);
-                if (token.expiry_date < Date.now()) {
-                    getNewToken(oauth2Client);
-                }
-                else {
-                    oauth2Client.credentials = token;
-                    console.log("Using previous token");
-                    callback(oauth2Client, param);
-                }
+                //if (token.expiry_date < Date.now()) {
+                //    getNewToken(oauth2Client, function(authUrl){
+                //        callback(authUrl);
+                //    });
+                //}
+                oauth2Client.credentials = token;
+                console.log("Using previous token");
+                watch.start(oauth2Client);
             }
         });
     }
@@ -66,16 +122,17 @@ exports.setup = function(callback, param) {
      * @param {getEventsCallback} callback The callback to call with the authorized
      *     client.
      */
-    function getNewToken(oauth2Client) {
+    function getNewToken(oauth2Client, callback) {
         var authUrl = oauth2Client.generateAuthUrl({
             access_type: 'offline',
             scope: SCOPES
         });
         oauth = oauth2Client;
+        callback(authUrl);
         // open up this url
         // sign in, Google will redirect to authorize page
         // read in auth code from url
-        open(authUrl);
+        //open(authUrl);
     }
 
 };
