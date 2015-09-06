@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module GitMail.Csrf 
+module GitMail.Csrf
 ( CsrfToken()
 , checkToken
 , peekToken
@@ -55,6 +55,6 @@ checkToken token = do
 
 -- | Writes a "CsrfToken" to the cache with the default expiry timeout.
 writeToken :: R.RedisCtx m f => CsrfToken -> m (f R.Status)
-writeToken token = R.psetex (tokenKeyPrefix `BS.append` unCsrfToken token) 
+writeToken token = R.psetex (tokenKeyPrefix `BS.append` unCsrfToken token)
                             tokenTimeout
-                            "" 
+                            ""

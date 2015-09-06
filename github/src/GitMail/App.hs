@@ -17,7 +17,7 @@ import           GitMail.Handlers
 import           GitMail.Html
 import           GitMail.Types
 
-type API = "github_oauth" 
+type API = "github_oauth"
            :> QueryParam "state" String
            :> QueryParam "code" String
            :> Get '[HTML] Html

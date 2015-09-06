@@ -23,7 +23,7 @@ tradeCodeForAccessToken oa = do
     req <- parseUrl accessTokenUrl
     let req' = req { method = "POST"
                    , requestHeaders = [ ( hAccept, "application/json" ) ]
-                   , requestBody = RequestBodyBS $ 
+                   , requestBody = RequestBodyBS $
                                    mconcat [ "client_secret=", e oauthClientSecret oa
                                            , "&client_id=", e oauthClientId oa
                                            , "&state=", e oauthCsrfToken oa

@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module GitMail.Email 
+module GitMail.Email
 ( stripPrefixes
 ) where
 

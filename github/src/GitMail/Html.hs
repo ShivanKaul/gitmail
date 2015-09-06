@@ -10,7 +10,7 @@ import Text.Blaze.Html5.Attributes
 oauthRedirect clientId csrfToken =
     docTypeHtml $ do
         head $ do
-            meta ! httpEquiv "refresh" 
+            meta ! httpEquiv "refresh"
                  ! content (mconcat [ "3;"
                                    , "URL=https://github.com/login/oauth/authorize"
                                    , "?scope=repo"
