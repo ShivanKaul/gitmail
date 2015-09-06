@@ -26,4 +26,4 @@ main = do
 
     state <- newAppState
 
-    run 8080 $ app conf state
+    run 8000 $ app conf state
