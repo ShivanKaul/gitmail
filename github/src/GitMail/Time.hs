@@ -13,6 +13,8 @@ import           Data.String
 import qualified Data.Time           as T
 import           Data.Text           ( pack, unpack )
 
+-- | A wrapper around a "T.UTCTime" with instances for "ToJSON", "FromJSON",
+-- and "IsString".
 newtype Time = Time { unTime :: T.UTCTime
                     }
                     deriving (Show, Ord, Eq)
