@@ -47,7 +47,8 @@ githubOAuth c s mcsrf mcode = do
                         Right user -> do
                             let username = GU.detailedOwnerLogin user
                             let githubConf = GithubConf { githubUser = username
-                                                        , githubRepo = "gitmail"
+                                                        , githubRepo =
+                                                              defaultGitmailRepo
                                                         , githubAuth = auth
                                                         }
                             liftIO $ R.runRedis (stateRedisConn s) $ do
@@ -78,5 +79,3 @@ githubStart c s = do
                          $ tokenToByteString csrf
                          )
 
-githubFinished :: App (EitherT ServantErr IO Html)
-githubFinished = undefined

@@ -21,8 +21,6 @@ type API = "github_oauth"
            :> QueryParam "state" String
            :> QueryParam "code" String
            :> Get '[HTML] Html
-      :<|> "github_finished"
-           :> Get '[HTML] Html
       :<|> "github_start"
            :> Get '[HTML] Html
 
@@ -31,7 +29,6 @@ api = Proxy
 
 server :: App (Server API)
 server c s = githubOAuth c s
-    :<|> githubFinished c s
     :<|> githubStart c s
 
 app :: App Application

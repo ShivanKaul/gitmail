@@ -14,6 +14,9 @@ import           Github.Auth
 
 import qualified GitMail.Time         as GT
 
+-- | The name of the repository to use for gitmail.
+defaultGitmailRepo = "gitmail"
+
 -- | Orphan instance for serializing GithubAuth to JSON
 instance ToJSON GithubAuth
 instance FromJSON GithubAuth
