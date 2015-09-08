@@ -1,0 +1,85 @@
+p {
+    color: #009900;
+    font-family: 'Lato';
+}
+
+p a {
+    color: #009900;
+}
+
+p a:hover {
+    color: #44c767;
+}
+
+#images {
+    display: flex;
+    justify-content: space-between;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+#images {
+    width: 300px;
+    height: auto;
+}
+
+#content {
+    width: 500px;
+    height: 200px;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    margin: -100px 0 0 -250px;
+}
+
+blockquote {
+    background: #f9f9f9;
+    border-left: 10px solid #ccc;
+    margin: 1.5em 10px;
+    padding: 0.5em 10px;
+    quotes: "\201C""\201D""\2018""\2019";
+}
+
+blockquote:before {
+    color: #ccc;
+    content: open-quote;
+    font-size: 4em;
+    line-height: 0.1em;
+    margin-right: 0.25em;
+    vertical-align: -0.4em;
+}
+
+blockquote p {
+    display: inline;
+}
+
+/*#button a{*/
+/*display: inline;*/
+/*float: none;*/
+/*}*/
+
+.signup {
+    background-color:#44c767;
+    -moz-border-radius:28px;
+    -webkit-border-radius:28px;
+    border-radius:28px;
+    border:1px solid #18ab29;
+    display:inline-block;
+    cursor:pointer;
+    color:#ffffff;
+    font-family: 'Lato';
+    font-size:17px;
+    padding:16px 31px;
+    text-decoration:none;
+    text-shadow:0px 1px 0px #2f6627;
+}
+
+.signup:hover {
+    background-color:#009900;
+}
+
+.signup:active {
+    position:relative;
+    top:1px;
+}
+
