@@ -1,3 +1,23 @@
+h1 {
+    font-size: 10em;
+    font-weight: bold;
+    letter-spacing: -1px;
+    line-height: 1;
+    text-align: center;
+    font-family: 'Lato';
+    color: #009900;
+}
+
+h3 {
+    font-size: 3em;
+    font-weight: bold;
+    letter-spacing: -1px;
+    line-height: 1;
+    text-align: center;
+    font-family: 'Lato';
+    color: #009900;
+}
+
 p {
     color: #009900;
     font-family: 'Lato';
@@ -11,24 +31,21 @@ p a:hover {
     color: #44c767;
 }
 
-#images {
-    display: flex;
-    justify-content: space-between;
-    margin: 0 auto;
-    padding: 20px;
-}
-
-#images {
-    width: 300px;
-    height: auto;
-}
-
 #content {
     width: 500px;
     height: 200px;
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 10%;
+    margin: -100px 0 0 -250px;
+}
+
+#center {
+    width: 500px;
+    height: 200px;
+    position: absolute;
+    left: 50%;
+    top: 30%;
     margin: -100px 0 0 -250px;
 }
 
@@ -53,10 +70,14 @@ blockquote p {
     display: inline;
 }
 
-/*#button a{*/
-/*display: inline;*/
-/*float: none;*/
-/*}*/
+#explain p {
+    color: black;
+}
+
+#postscript p {
+    color: black;
+    font-size: 1.2em;
+}
 
 .signup {
     background-color:#44c767;
@@ -72,9 +93,11 @@ blockquote p {
     padding:16px 31px;
     text-decoration:none;
     text-shadow:0px 1px 0px #2f6627;
+    /*transition:  ease 1s;*/
 }
 
 .signup:hover {
+    transition: all ease 0.3s;
     background-color:#009900;
 }
 

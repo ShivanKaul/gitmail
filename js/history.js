@@ -2,7 +2,7 @@ var google = require('googleapis');
 var redis = require('./redis');
 
 
-exports.list = function(auth, startHistoryId) {
+exports.list = function (auth, startHistoryId) {
     /**
      * list
      *
@@ -11,12 +11,12 @@ exports.list = function(auth, startHistoryId) {
     var gmail = google.gmail('v1');
     gmail.users.history.list({
         auth: auth,
+        labelId: "INBOX",
         userId: 'me',
         startHistoryId: startHistoryId
     }, function (err, response) {
         if (err) {
             console.log('Error while listing history ' + err);
-            return;
         }
         else {
             console.log("Successfully sent request for listing history");
@@ -31,19 +31,20 @@ exports.list = function(auth, startHistoryId) {
             }, function (err, response) {
                 if (err) {
                     console.log('Error while getting message: ' + err);
-                    return;
                 }
                 else {
                     console.log("Successfully sent request for getting message");
                     var headers = response.payload.headers;
                     var parts = response.payload.parts;
 
+                    console.log(response.payload);
+
                     var subject,
                         date,
                         from;
 
                     // Get relevant headers
-                    for (var i = 0 ; i < headers.length; i++) {
+                    for (var i = 0; i < headers.length; i++) {
                         if (headers[i].name === 'Subject') {
                             subject = headers[i].value;
                         }
@@ -59,8 +60,17 @@ exports.list = function(auth, startHistoryId) {
 
                     var name = from.substring(0, from.indexOf('<')).trim();
                     var email = from.substring(from.indexOf('<') + 1, from.indexOf('>')).trim();
+                    var body;
                     console.log(subject);
-                    var body = (new Buffer(parts[0].body.data, 'base64')).toString();
+                    console.log(parts);
+
+                    if (parts) {
+                        body = (new Buffer(parts[0].body.data, 'base64')).toString();
+                    }
+                    else {
+                        body = (new Buffer(response.payload.body.data, 'base64')).toString();
+                    }
+
                     console.log(body);
                     redis.unshift(date, name, email, subject, body)
                 }

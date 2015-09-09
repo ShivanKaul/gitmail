@@ -1,6 +1,6 @@
 var google = require('googleapis');
 
-exports.start = function(auth) {
+exports.start = function(auth, callback) {
     /**
      * watch
      *
@@ -14,14 +14,24 @@ exports.start = function(auth) {
             'topicName': "projects/gitjob-1020/topics/newThread",
             'labelIds': ["INBOX"]
         }
-    }, function (err, response) {
+    }, function (err) {
         if (err) {
             console.log('The API returned an error: ' + err);
-            return;
         }
         else {
-            console.log("Successfully sent request for watch");
-            console.log(response)
+            gmail.users.getProfile({
+                auth: auth,
+                userId: 'me'
+            }, function (err, response) {
+                if (err) {
+                    console.log('Could not find userinfo for authenticated user: ' + err);
+                }
+                else {
+                    console.log("Found userinfo for " + response.emailAddress);
+                    console.log("Successfully sent request for watch");
+                    callback(response);
+                }
+            });
         }
     });
 };

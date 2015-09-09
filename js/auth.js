@@ -1,167 +1,112 @@
 var rootdir = __dirname + '/../';
 var fs = require('fs');
-var readline = require('readline');
 var googleAuth = require('google-auth-library');
-var oauth;
-var open = require('open');
-var watch = require('./watch');
-var TOKEN_DIR = rootdir + '.credentials/';
-var TOKEN_PATH = TOKEN_DIR + 'token.json';
 
+// MongoDB
+var MongoClient = require('mongodb').MongoClient;
+var url = 'mongodb://localhost:27017';
 
-exports.send = function(callback, param) {
-
-    var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
-
+function createOAuth2Object(callback) {
     // Load client secrets from a local file.
     fs.readFile(rootdir + '.credentials/client_secret.json', function processClientSecrets(err, content) {
         if (err) {
             console.log('Error loading client secret file: ' + err);
             return;
         }
-        // Authorize a client with the loaded credentials, then call the
-        // Gmail API.
+        var credentials = JSON.parse(content);
 
-        var credentials = JSON.parse(content)
         var clientSecret = credentials.web.client_secret;
         var clientId = credentials.web.client_id;
-        var redirectUrl = credentials.web.redirect_uris[0];
+        var redirectUrl = credentials.web.redirect_uris[1];
         var auth = new googleAuth();
-        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-
-        fs.readFile(TOKEN_PATH, function(err, token) {
-            if (err) {
-                console.log("Can't find token");
-                //getNewToken(oauth2Client, function(authUrl){
-                //    callback(authUrl);
-                //});
-                //callback(authUrl);
-            } else {
-                token = JSON.parse(token);
-                //if (token.expiry_date < Date.now()) {
-                //    getNewToken(oauth2Client, function(authUrl){
-                //        callback(authUrl);
-                //    });
-                //}
-                oauth2Client.credentials = token;
-                callback(oauth2Client, param);
-            }
-        });
-    })
+        callback(new auth.OAuth2(clientId, clientSecret, redirectUrl));
+    });
 }
 
+function fetchToken(email, callback) {
+    MongoClient.connect(url, function(err, db) {
+        console.log("Connected correctly to server for fetching.");
 
-exports.setup = function(callback) {
-
-    var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
-
-    // Load client secrets from a local file.
-    fs.readFile(rootdir + '.credentials/client_secret.json', function processClientSecrets(err, content) {
-        if (err) {
-            console.log('Error loading client secret file: ' + err);
-            return;
-        }
-        // Authorize a client with the loaded credentials, then call the
-        // Gmail API.
-        authorize(JSON.parse(content), callback)
+        var collection = db.collection('access_tokens');
+        collection.findOne(
+            {
+                email: email
+            }, function(err, doc) {
+                if (err) {
+                    console.log("Couldn't fetch access token from MongoDB.")
+                }
+                else {
+                    callback(doc.email, doc.historyId);
+                }
+            });
     });
+}
 
-
-
-
-    /**
-     * Create an OAuth2 client with the given credentials, and then execute the
-     * given callback function.
-     *
-     * @param {Object} credentials The authorization client credentials.
-     * @param {function} callback The callback to call with the authorized client.
-     * @param {string} param Optional parameter
-
-     */
-    function authorize(credentials, callback) {
-        console.log(credentials);
-        var clientSecret = credentials.web.client_secret;
-        var clientId = credentials.web.client_id;
-        var redirectUrl = credentials.web.redirect_uris[0];
-        var auth = new googleAuth();
-        var oauth2Client = new auth.OAuth2(clientId, clientSecret, redirectUrl);
-        var authUrl = oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: SCOPES
-        });
-
-        // Check if we have previously stored a token.
-        fs.readFile(TOKEN_PATH, function(err, token) {
-            if (err) {
-                console.log("Can't find token");
-                //getNewToken(oauth2Client, function(authUrl){
-                //    callback(authUrl);
-                //});
-                                oauth = oauth2Client;
-
-                callback(authUrl);
-            } else {
-                token = JSON.parse(token);
-                //if (token.expiry_date < Date.now()) {
-                //    getNewToken(oauth2Client, function(authUrl){
-                //        callback(authUrl);
-                //    });
-                //}
-                oauth2Client.credentials = token;
-                console.log("Using previous token");
-                watch.start(oauth2Client);
-            }
-        });
-    }
-
-    /**
-     * Get and store new token after prompting for user authorization, and then
-     * execute the given callback with the authorized OAuth2 client.
-     *
-     * @param {google.auth.OAuth2} oauth2Client The OAuth2 client to get token for.
-     * @param {getEventsCallback} callback The callback to call with the authorized
-     *     client.
-     */
-    function getNewToken(oauth2Client, callback) {
-        var authUrl = oauth2Client.generateAuthUrl({
-            access_type: 'offline',
-            scope: SCOPES
-        });
-        oauth = oauth2Client;
-        callback(authUrl);
-        // open up this url
-        // sign in, Google will redirect to authorize page
-        // read in auth code from url
-        //open(authUrl);
-    }
-
+exports.fetchOAuth = function(email, callback) {
+    createOAuth2Object(function(oAuth2Client) {
+        fetchToken(email, function(token, historyId) {
+            oAuth2Client.credentials = token;
+            callback(oAuth2Client, historyId);
+        })
+    })
 };
 
-exports.useAccessToken = function(code, callback, param) {
-    oauth.getToken(code, function(err, token) {
-        if (err) {
-            console.log('Error while trying to retrieve access token', err);
-            return;
-        }
-        oauth.credentials = token;
-        storeToken(token);
-        callback(oauth, param);
-    });
+exports.getAuthUrl = function(callback) {
+    var SCOPES = ['https://www.googleapis.com/auth/gmail.readonly'];
+
+    createOAuth2Object(function(oauth2Client) {
+        var authUrl = oauth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES
+        });
+        callback(authUrl);
+    })
+};
+
+exports.useAccessToken = function(code, callback) {
+    createOAuth2Object(function(client) {
+        client.getToken(code, function(err, token) {
+            if (err) {
+                console.log('Error while trying to retrieve access token', err);
+                return;
+            }
+            client.credentials = token;
+            callback(client, function(response) {
+                console.log("Trying to store token");
+                storeToken(token, response.emailAddress, response.historyId);
+            });
+        });
+    })
 };
 
 /**
  * Store token to disk be used in later program executions.
  *
  * @param {Object} token The token to store to disk.
+ * @param {Object} email The user's email.
+ * @param {Object} historyId The historyId on the user's inbox at the time of setting the watch.
  */
-function storeToken(token) {
-    try {
-        fs.mkdirSync(TOKEN_DIR);
-    } catch (err) {
-        if (err.code != 'EEXIST') {
-            throw err;
-        }
-    }
-    fs.writeFile(TOKEN_PATH, JSON.stringify(token));
-    console.log('Token stored to ' + TOKEN_PATH);
+function storeToken(token, email, historyId) {
+
+    MongoClient.connect(url, function(err, db) {
+        console.log("Connected correctly to server");
+
+        var collection = db.collection('access_tokens');
+        collection.updateOne(
+            {
+                email: email
+            },
+            {
+                email: email,
+                historyId: historyId,
+                token: token
+            },
+            {
+                upsert: true
+            }, function(err) {
+                if (err) {
+                    console.log("Couldn't save access token, MongoDB is the SnapChat of databases.")
+                }
+            });
+    });
 }
